@@ -69,3 +69,30 @@ For backend: npm run dev
 ![dashboard_order_placing](https://github.com/Maran1947/Stockify/assets/69248165/05f097a1-29de-4ae7-9d60-d946def8d335)
 ![risk_management_tool](https://github.com/Maran1947/Stockify/assets/69248165/504fcf3e-250a-4665-8abc-60e8e2ed223b)
 
+## 🤝 Contribution
+Contributions are welcome,
+See [CONTRIBUTING.md](https://github.com/Maran1947/stockify/blob/master/CONTRIBUTING.md)
+
+# 🛡️ License
+This project is licensed under the MIT License - see the [`LICENSE`](LICENSE) file for details.
+
+_Don't forget to show your ❤ love if you feel __fabulous__, just hit the ⭐ star button at the top-right of the page_
+
+## ☕️ Buy Me a Coffee
+
+If you find this project helpful, interesting, or just want to show your appreciation, consider buying me a coffee! Your support goes a long way in keeping me fueled up and motivated to maintain and improve this project. 🚀
+
+<p align="center">
+  <a href="https://www.buymeacoffee.com/abhishekmaran" target="_blank">
+    <img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" width="200">
+  </a>
+</p>
+
+By buying me a coffee, you're not only supporting this project but also ensuring a steady flow of creativity, late-night coding sessions, and continuous development efforts. ☕️💻
+
+If a one-time coffee isn't enough to express your gratitude, you can even consider becoming a recurring sponsor and join my exclusive circle of supporters. Your ongoing support will provide additional resources and help in delivering new features, fixing bugs, and enhancing the overall user experience. 🌟
+
+Thank you for considering supporting this project. Your generosity is greatly appreciated! Cheers! ☕️🎉
+
+
+
