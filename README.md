@@ -32,6 +32,17 @@ npm install
 3. Set up the configuration file:
 - Create an .env file in the backend folder of the stockify
 - Update the necessary environment variables in the `.env` file, such as database credentials and API keys.
+```
+Frontend .env:
+REACT_APP_BASE_URL=http://localhost:5000/api
+
+Backend .env: 
+PORT=5000
+MONGO_URI=<MONGO_URI>
+TOKEN_KEY=<JWT_TOKEN_KEY>
+FYERS_APP_ID=<FYERS_APP_ID>
+FYERS_ACCESS_TOKEN=<FYERS_ACCESS_TOKEN>
+```
 
 4. Start the application:
 ```
