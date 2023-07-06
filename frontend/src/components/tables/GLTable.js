@@ -7,6 +7,7 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 import axios from 'axios';
+import Loading from '../loading/Loading';
 
 function createData(
     symbol,
@@ -35,12 +36,14 @@ function createData(
     };
 }
 
-export default function GLTable({ type }) {
+export default function GLTable({ type, refreshGL, setRefreshGL }) {
 
     const [tableData, setTableData] = useState([]);
+    const [loading, setLoading] = useState(false);
 
     const getGL = async () => {
         try {
+            setLoading(true);
             const response = await axios.get(`${process.env.REACT_APP_BASE_URL}/analysis/gl`);
             if (response.status === 200) {
                 let glData;
@@ -61,12 +64,25 @@ export default function GLTable({ type }) {
                         scrip.trade_quantity,
                         scrip.turnover)
                 });
-
                 setTableData(glData);
+                setLoading(false);
             }
         } catch (err) {
             console.log(err);
+            setLoading(false);
             alert('Internal server error');
+        }
+    }
+
+    const refreshGainerLosers = async () => {
+        try {
+            const response = await axios.put(`${process.env.REACT_APP_BASE_URL}/analysis/gl/save`);
+            if(response.status === 200) {
+                getGL();
+            }
+        } catch (err) {
+            console.log(err);
+            alert("Something went wrong");
         }
     }
 
@@ -74,9 +90,16 @@ export default function GLTable({ type }) {
         getGL();
     }, [type]);
 
+    useEffect(() => {
+        if (refreshGL) {
+            setRefreshGL(false);
+            refreshGainerLosers();
+        }
+    }, [refreshGL]);
+
     return (
         <TableContainer component={Paper}>
-            <Table sx={{ minWidth: 650 }} aria-label="simple table">
+            <Table stickyHeader sx={{ minWidth: 650 }} aria-label="simple table">
                 <TableHead>
                     <TableRow>
                         <TableCell>SYMBOL</TableCell>
@@ -92,7 +115,13 @@ export default function GLTable({ type }) {
                 </TableHead>
                 <TableBody>
                     {
-                        tableData && tableData.length > 0 ?
+                        loading ?
+                        <TableRow>
+                            <TableCell>
+                                <Loading />
+                            </TableCell>
+                        </TableRow>
+                        : tableData && tableData.length > 0 ?
                             tableData.map((scrip) => (
                                 <TableRow
                                     key={scrip.symbol}
@@ -106,7 +135,7 @@ export default function GLTable({ type }) {
                                     <TableCell align="right">{scrip.ltp}</TableCell>
                                     <TableCell align="right" sx={{
                                         color: type === 'gainers' ? '#23d160' : '#ff0000'
-                                    }} >{scrip.perChange}</TableCell>
+                                    }} >{scrip.perChange}{"%"}</TableCell>
                                     <TableCell align="right">{scrip.volume}</TableCell>
                                     <TableCell align="right">{scrip.value}</TableCell>
                                 </TableRow>

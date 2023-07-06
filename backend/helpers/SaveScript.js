@@ -51,7 +51,7 @@ const saveTodb = async () => {
     for (const value of map.values()) {
         data.push(value);
     }
-    console.log(map.size);
+    // console.log(map.size);
     var jsonContent = JSON.stringify(data);
 
     fs.writeFile("scripSymbol.json", jsonContent, 'utf8', function (err) {

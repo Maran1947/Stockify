@@ -51,7 +51,7 @@ function Signup() {
         e.preventDefault();
 
         const { fullName, mobile, email, password, confirmPassword } = formData;
-        console.log(formData)
+        // console.log(formData)
         const formErrors = {
             fullName: validateFullName(fullName),
             mobile: validateMobileNumber(mobile),
@@ -84,7 +84,7 @@ function Signup() {
                 setLoading(false);
             }
         } else {
-            console.log(formErrors);
+            // console.log(formErrors);
             setErrors(formErrors);
         }
     };
