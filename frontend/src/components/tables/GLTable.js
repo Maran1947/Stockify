@@ -46,13 +46,14 @@ export default function GLTable({ type, refreshGL, setRefreshGL }) {
             setLoading(true);
             const response = await axios.get(`${process.env.REACT_APP_BASE_URL}/analysis/gl`);
             if (response.status === 200) {
+                const glResponseData = response.data;
                 let glData;
-                if (type === 'gainers')
-                    glData = response.data.gainers[0]['NIFTY'].data;
-                else
-                    glData = response.data.losers[0]['NIFTY'].data;
+                if ( glResponseData.gainers && type === 'gainers')
+                    glData = glResponseData.gainers[0]['NIFTY'].data;
+                if( glResponseData.losers && type === 'losers' )
+                    glData = glResponseData.losers[0]['NIFTY'].data;
 
-                glData = glData.map((scrip) => {
+                glData = glData?.map((scrip) => {
                     return createData(
                         scrip.symbol,
                         scrip.open_price,
@@ -70,7 +71,7 @@ export default function GLTable({ type, refreshGL, setRefreshGL }) {
         } catch (err) {
             console.log(err);
             setLoading(false);
-            alert('Internal server error');
+            alert('Something went wrong');
         }
     }
 
@@ -79,9 +80,11 @@ export default function GLTable({ type, refreshGL, setRefreshGL }) {
             const response = await axios.put(`${process.env.REACT_APP_BASE_URL}/analysis/gl/save`);
             if(response.status === 200) {
                 getGL();
+                setRefreshGL(false);
             }
         } catch (err) {
             console.log(err);
+            setRefreshGL(false);
             alert("Something went wrong");
         }
     }
@@ -92,7 +95,6 @@ export default function GLTable({ type, refreshGL, setRefreshGL }) {
 
     useEffect(() => {
         if (refreshGL) {
-            setRefreshGL(false);
             refreshGainerLosers();
         }
     }, [refreshGL]);

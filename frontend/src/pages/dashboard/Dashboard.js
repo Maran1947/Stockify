@@ -8,6 +8,7 @@ import axios from 'axios';
 import GLTable from '../../components/tables/GLTable';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import moment from 'moment';
+import Loading from '../../components/loading/Loading';
 
 export default function Dashboard() {
 
@@ -16,36 +17,40 @@ export default function Dashboard() {
   const [refreshGL, setRefreshGL] = useState(false);
   const [marketHolidays, setMarketHolidays] = useState({});
   const [upcomingHolidays, setUpcomingHolidays] = useState({});
-
+  const [refreshMS, setRefreshMS] = useState(false);
+ 
   const getMarketStatus = async () => {
     try {
       const response = await axios.get(`${process.env.REACT_APP_BASE_URL}/analysis/market-status`);
       if (response.status === 200) {
-        console.log(response.data.marketStatus.marketState);
-        setMarketStatus(response.data.marketStatus.marketState);
+        // console.log(response.data.marketStatus.marketState);
+        setMarketStatus(response.data?.marketStatus?.marketState);
       }
     } catch (err) {
       console.log(err);
-      alert("Something went wrong");
+      // alert("Something went wrong");
     }
   }
 
   const refreshMarketStatus = async () => {
     try {
+      setRefreshMS(true);
       const response = await axios.put(`${process.env.REACT_APP_BASE_URL}/analysis/market-status/save`);
       if (response.status === 200) {
         getMarketStatus();
+        setRefreshMS(false);
       }
     } catch (err) {
       console.log(err);
+      setRefreshMS(false);
       alert("Something went wrong");
     }
   }
 
   const getUpcomingHoliday = (holidays) => {
     const today = moment();
-    const upcomingHolidays = holidays.filter(holiday => moment(holiday.tradingDate).isAfter(today));
-    const nearestHoliday = upcomingHolidays.length > 0 ? upcomingHolidays[0] : null;
+    const upcomingHolidays = holidays?.filter(holiday => moment(holiday.tradingDate).isAfter(today));
+    const nearestHoliday = upcomingHolidays?.length > 0 ? upcomingHolidays[0] : null;
 
     if (nearestHoliday) {
       const holidayDate = moment(nearestHoliday.tradingDate);
@@ -56,20 +61,21 @@ export default function Dashboard() {
         weekDay: nearestHoliday.weekDay,
         description: nearestHoliday.description,
         daysRemaining: daysRemaining
-      };
+      };  
     }
   }
 
   const getMarketHolidays = async () => {
     try {
       const response = await axios.get(`${process.env.REACT_APP_BASE_URL}/market-holidays/get`);
+      
       if (response.status === 200) {
-        setMarketHolidays(response.data.tradingHolidays);
-        setUpcomingHolidays(getUpcomingHoliday(response.data.tradingHolidays.CM));
+        setMarketHolidays(response.data?.tradingHolidays);
+        setUpcomingHolidays(getUpcomingHoliday(response.data?.tradingHolidays?.CM));
       }
     } catch (err) {
       console.log(err);
-      alert("Something went wrong");
+      // alert("Something went wrong");
     }
   }
 
@@ -100,16 +106,21 @@ export default function Dashboard() {
             fontSize: '1.5rem',
             mb: 2
           }} >Market Status</Typography>
-          <RefreshIcon sx={{
-            cursor: 'pointer',
-            marginBottom: '1rem!important'
-          }} onClick={handleRefreshMarketStatus} />
+          {
+            refreshMS ?
+            <Loading /> : 
+            <RefreshIcon sx={{
+              cursor: 'pointer',
+              marginBottom: '1rem!important'
+            }} onClick={handleRefreshMarketStatus} />
+          }
         </Stack>
         <Stack
           direction="row"
           alignItems="center"
           spacing={2} >
           {
+            marketStatus && marketStatus?.length > 0 ?
             marketStatus.map((market) => {
               return <Chip
                 sx={{
@@ -120,7 +131,7 @@ export default function Dashboard() {
                 color={market.marketStatus.toLowerCase() === 'open' ? "success" : "info"}
                 label={market.market.toUpperCase()}
                 variant="outlined" />
-            })
+            }) : <Typography>No data found.</Typography>
           }
         </Stack>
       </Stack>
@@ -137,10 +148,14 @@ export default function Dashboard() {
             fontSize: '1.5rem',
             mb: 2
           }} >Top Gainers and losers</Typography>
-          <RefreshIcon sx={{
-            cursor: 'pointer',
-            marginBottom: '1rem!important'
-          }} onClick={handleRefreshGainerLosers} />
+          {
+            refreshGL ?
+            <Loading /> :
+            <RefreshIcon sx={{
+              cursor: 'pointer',
+              marginBottom: '1rem!important'
+            }} onClick={handleRefreshGainerLosers} />
+          }
         </Stack>
         <Stack
           direction="row"
@@ -199,13 +214,12 @@ export default function Dashboard() {
         </Stack>
         <Stack>
           {
-            marketHolidays &&
+            marketHolidays ?
             marketHolidays?.CM?.map((holiday, index) => {
               return (
-                <>
+                <div key={holiday.tradingDate + index}> 
                   <Divider />
                   <Stack
-                    key={holiday.tradingDate + index}
                     direction="row"
                     alignItems="center"
                     justifyContent="space-around"
@@ -246,9 +260,9 @@ export default function Dashboard() {
                       fontWeight: upcomingHolidays?.tradingDate === holiday.tradingDate && 'bold'  
                     }} >{holiday.weekDay}</Typography>
                   </Stack>
-                </>
+                </div>
               )
-            })
+            }) :  <Typography>No data found.</Typography>
           }
         </Stack>
       </Stack>
