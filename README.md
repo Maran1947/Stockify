@@ -26,7 +26,11 @@ git clone https://github.com/your-username/stockify.git
 2. Install the required dependencies:
 ```
 cd stockify
-npm install
+
+cd frontend
+  npm install
+cd backend
+  npm install
 ```
 
 3. Set up the configuration file:
