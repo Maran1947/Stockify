@@ -8,20 +8,24 @@ const MARKET_STATUS_URL = 'https://www.nseindia.com/api/marketStatus';
 
 module.exports.get_and_save_gainers_loosers = async (req,res) => {
     try {
-        const gainers = await axios.get(GAINERS_URL);
-        const losers = await axios.get(LOSERS_URL);
-        if(gainers.status === 200 && losers.status === 200) {
+        const gainersResponse = await fetch(GAINERS_URL); // axios.get(GAINERS_URL);
+        const losersResponse = await fetch(LOSERS_URL); // axios.get(LOSERS_URL);
+        
+        const  gainersData = await gainersResponse.json();
+        const  losersData = await losersResponse.json();
+
+        if(gainersResponse.status === 200 && losersResponse.status === 200) {
             
             const glData = await GainersLosers.find();
-            if(glData) {
+            if(glData && glData.length > 0) {
                 await GainersLosers.findOneAndUpdate({ _id: glData[0]._id },{
-                    gainers: gainers.data,
-                    losers: losers.data 
+                    gainers: gainersData,
+                    losers: losersData 
                 });
             } else {
                 const gainersLosers = new GainersLosers({
-                    gainers: gainers.data,
-                    losers: losers.data
+                    gainers: gainersData,
+                    losers: losersData
                 });
                 await gainersLosers.save();
             }
@@ -30,9 +34,13 @@ module.exports.get_and_save_gainers_loosers = async (req,res) => {
                 message: 'Successfully Saved'
             });
         }
+
+        return res.status(400).json({
+            message: 'Bad request'
+        });
         
     } catch (err) {
-        console.log(err.message);
+        console.log(err);
         return res.status(500).json({
             message: "Internal server error",
             error: err.message
@@ -42,17 +50,19 @@ module.exports.get_and_save_gainers_loosers = async (req,res) => {
 
 module.exports.get_and_save_market_status = async (req, res) => {
     try {
-        const response = await axios.get(MARKET_STATUS_URL);
+        const response = await fetch(MARKET_STATUS_URL) // axios.get(MARKET_STATUS_URL);
+        const data = await response.json();
+        // console.log(data);
         if(response.status === 200) {
             const marketStatus = await MarketStatus.find();
 
-            if(marketStatus.length > 0) {
+            if(marketStatus?.length > 0) {
                 await MarketStatus.findOneAndUpdate({ _id: marketStatus[0]._id }, {
-                    marketStatus: response.data
+                    marketStatus: data
                 });
             } else {
                 const marketStatus = new MarketStatus({
-                    marketStatus: response.data
+                    marketStatus: data
                 });
 
                 await marketStatus.save();
@@ -60,7 +70,7 @@ module.exports.get_and_save_market_status = async (req, res) => {
 
             return  res.status(200).json({
                 message: 'Saved successfully',
-                marketStatus: response.data
+                marketStatus: data
             });
         }
     } catch (err) {
@@ -77,7 +87,7 @@ module.exports.get_market_status = async (req, res) => {
         const marketStatus = await MarketStatus.find();
         if(marketStatus) {
             return  res.status(200).json({
-                marketStatus: marketStatus[0].marketStatus
+                marketStatus: marketStatus[0]?.marketStatus
             });
         }
     } catch (err) {

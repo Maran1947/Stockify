@@ -23,9 +23,9 @@ module.exports.add_script_in_watchlist = async (req, res) => {
         const script = await Scrip.findOne({ _id: ObjectId(scriptId) });
 
         const stock = await getQuotes(script.symbol);
-        // console.log(stock);
+        console.log(stock);
 
-        await Scrip.findOneAndUpdate({  _id: ObjectId(scriptId) },{
+        stock?.d && await Scrip.findOneAndUpdate({  _id: ObjectId(scriptId) },{
             cmd: stock.d[0].v.cmd,
             changeInPrice: stock.d[0].v.ch,
             percentageChange: stock.d[0].v.chp,
